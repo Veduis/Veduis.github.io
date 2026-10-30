@@ -1,9 +1,10 @@
 # Veduis GitHub Pages
 
-Static copy of the ADA web accessibility deadline calculator served at https://veduis.github.io/.
+Served at https://veduis.github.io/.
 
-The calculator answers three questions for a given entity type: which compliance date applies, what technical standard the rule requires, and where the primary source is published. Dates run from the 1990 ADA statute through the 2027 and 2028 Title II and Section 504 deadlines.
+- `/` is a placeholder. It is `noindex` on purpose and only points at veduis.com.
+- `/ada-deadline-calculator/` is the ADA web accessibility deadline calculator. That page is the one worth indexing.
 
-Source dataset: https://doi.org/10.5281/zenodo.23781873
+Single files, no build step, no external requests. Edit and push, Pages publishes main automatically in about a minute.
 
-Single file, no build step, no external requests. Edit `index.html` and push.
+Source dataset for the calculator: https://doi.org/10.5281/zenodo.23781873

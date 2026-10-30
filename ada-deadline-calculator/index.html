@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADA Web Accessibility Deadline Calculator: Title II, Section 504, Title III</title>
+<meta name="description" content="Enter your entity type to see the exact U.S. web accessibility compliance date that applies to you, the technical standard it requires, and the primary source for the rule. Covers DOJ ADA Title II, HHS Section 504, ADA Title III, and the European Accessibility Act.">
+<link rel="canonical" href="https://veduis.github.io/ada-deadline-calculator/">
+<meta property="og:title" content="ADA Web Accessibility Deadline Calculator">
+<meta property="og:description" content="Which web accessibility deadline applies to you, when it hits, and what standard it requires. Sourced dates, no signup.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://veduis.github.io/ada-deadline-calculator/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b1220'/%3E%3Cpath d='M18 44 32 18l14 26' fill='none' stroke='%2338bdf8' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: #121b2d;
+    --panel-2: #16203480;
+    --line: #24314a;
+    --ink: #e8eefb;
+    --muted: #a3b1c9;
+    --accent: #38bdf8;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --alert: #fb7185;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: radial-gradient(1100px 600px at 15% -10%, #16233d 0%, var(--bg) 55%) no-repeat, var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 20px 72px; }
+  .skip {
+    position: absolute; left: -9999px; top: 0; background: var(--accent); color: #04121f;
+    padding: 10px 16px; border-radius: 0 0 10px 0; font-weight: 700; z-index: 10;
+  }
+  .skip:focus { left: 0; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible {
+    outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px;
+  }
+  header { padding: 56px 0 28px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 14px;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  h1 { font-size: clamp(1.9rem, 4.2vw, 2.75rem); line-height: 1.15; margin: 0 0 16px; letter-spacing: -0.02em; }
+  h2 { font-size: 1.35rem; margin: 44px 0 12px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.05rem; margin: 0 0 6px; }
+  p { margin: 0 0 14px; color: var(--muted); }
+  .lede { font-size: 1.09rem; max-width: 62ch; }
+  .card {
+    background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 26px;
+    box-shadow: 0 20px 60px -40px #000;
+  }
+  .controls { display: grid; gap: 18px; grid-template-columns: 1.4fr 1fr; align-items: end; }
+  @media (max-width: 700px) { .controls { grid-template-columns: 1fr; } }
+  label { display: block; font-weight: 650; font-size: .93rem; margin-bottom: 7px; }
+  .hint { display: block; font-weight: 400; color: var(--muted); font-size: .82rem; margin-top: 4px; }
+  select, input[type="date"] {
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line);
+    background: #0d1626; color: var(--ink); font: inherit;
+  }
+  .result { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 24px; }
+  .verdict { display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline; margin-bottom: 8px; }
+  .date-big { font-size: 1.9rem; font-weight: 750; letter-spacing: -0.02em; }
+  .countdown {
+    font-variant-numeric: tabular-nums; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+    font-size: .85rem; border: 1px solid currentColor;
+  }
+  .is-upcoming { color: var(--warn); }
+  .is-soon { color: var(--alert); }
+  .is-passed { color: var(--good); }
+  .rule { display: grid; gap: 8px; margin: 0; }
+  .rule div { display: grid; grid-template-columns: 150px 1fr; gap: 10px; }
+  .rule dt { color: var(--muted); font-size: .88rem; }
+  .rule dd { margin: 0; font-size: .95rem; }
+  @media (max-width: 560px) { .rule div { grid-template-columns: 1fr; gap: 2px; } }
+  .grid3 { display: grid; gap: 16px; grid-template-columns: repeat(3, 1fr); margin-top: 16px; }
+  @media (max-width: 780px) { .grid3 { grid-template-columns: 1fr; } }
+  .grid3 .card { padding: 20px; }
+  .tag {
+    display: inline-block; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase;
+    font-weight: 700; color: var(--accent); border: 1px solid #27466b; background: #0f1c30;
+    padding: 3px 9px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .tag.good { color: var(--good); border-color: #235c46; background: #0d2119; }
+  .tag.warn { color: var(--warn); border-color: #6b5620; background: #221b0c; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: .93rem; }
+  caption { text-align: left; color: var(--muted); font-size: .85rem; padding-bottom: 8px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: #cbd7ea; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; }
+  tbody tr:hover { background: #14203433; }
+  .cta {
+    margin-top: 44px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+    justify-content: space-between; padding: 24px; border-radius: var(--radius);
+    border: 1px solid #24456b; background: linear-gradient(120deg, #101c30, #0e1726);
+  }
+  .cta p { margin: 0; color: #cbd7ea; max-width: 52ch; }
+  .btn {
+    display: inline-block; text-decoration: none; font-weight: 700; padding: 12px 20px;
+    border-radius: 10px; background: #f8fafc; color: #090d16 !important; border: 1px solid #ffffff;
+    white-space: nowrap;
+  }
+  .btn:hover { background: #ffffff; }
+  footer { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 22px; font-size: .87rem; color: var(--muted); }
+  footer a { color: #9fd6f2; }
+  .src { font-size: .85rem; word-break: break-word; }
+  .note { font-size: .86rem; color: #8fa1bd; margin-top: 10px; }
+  ul.links { margin: 8px 0 0; padding-left: 20px; color: var(--muted); }
+  ul.links li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#calc">Skip to the calculator</a>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow"><span class="dot"></span> Sourced deadlines, no signup</p>
+    <h1>ADA Web Accessibility Deadline Calculator</h1>
+    <p class="lede">Which web accessibility deadline applies to your organization, when it takes effect, and what technical standard it requires. Pick an entity type and get the date, the countdown, and the primary source for the rule.</p>
+  </header>
+
+  <main id="main">
+    <section class="card" id="calc" aria-labelledby="calc-h">
+      <h2 id="calc-h" style="margin-top:0">Your deadline</h2>
+      <div class="controls">
+        <div>
+          <label for="entity">Entity type
+            <span class="hint">Choose the closest match. Title II applies to public entities, Title III to private businesses.</span>
+          </label>
+          <select id="entity">
+            <option value="title_ii_large">State or local government, population 50,000 or more</option>
+            <option value="title_ii_small">State or local government, population under 50,000, or special district</option>
+            <option value="title_iii_business">Private business open to the public (Title III)</option>
+            <option value="federal_contractor">Federal agency or federal contractor (Section 508)</option>
+            <option value="hhs_recipient_15">HHS funding recipient, 15 or more employees (Section 504)</option>
+            <option value="hhs_recipient_small">HHS funding recipient, fewer than 15 employees (Section 504)</option>
+            <option value="eu_business">Business selling into the European Union</option>
+          </select>
+        </div>
+        <div>
+          <label for="asof">As of date
+            <span class="hint">Use a past date to see what applied then.</span>
+          </label>
+          <input type="date" id="asof">
+        </div>
+      </div>
+
+      <div class="result" id="result" aria-live="polite">
+        <div class="verdict">
+          <span class="date-big" id="deadline-date">April 26, 2027</span>
+          <span class="countdown is-upcoming" id="countdown">set your entity type</span>
+        </div>
+        <dl class="rule">
+          <div><dt>Applies to</dt><dd id="r-applies">State and local government entities with a population of 50,000 or more</dd></div>
+          <div><dt>Required standard</dt><dd id="r-standard">WCAG 2.1 Level AA</dd></div>
+          <div><dt>Authority</dt><dd id="r-authority">U.S. Department of Justice, 28 CFR Part 35</dd></div>
+          <div><dt>Primary source</dt><dd class="src"><a id="r-source" href="https://www.federalregister.gov/documents/2026/04/20/2026-07663/extension-of-compliance-dates-for-nondiscrimination-on-the-basis-of-disability-accessibility-of-web" rel="noopener">Federal Register, Extension of Compliance Dates</a></dd></div>
+        </dl>
+        <p class="note" id="r-note"></p>
+      </div>
+    </section>
+
+    <h2>What each rule actually requires</h2>
+    <div class="grid3">
+      <article class="card">
+        <span class="tag warn">Title II</span>
+        <h3>Public entities</h3>
+        <p>State and local governments must meet WCAG 2.1 Level AA for web content and mobile apps. The DOJ final rule was published in April 2024 and the compliance dates were pushed by one year in April 2026.</p>
+      </article>
+      <article class="card">
+        <span class="tag good">Title III</span>
+        <h3>Private businesses</h3>
+        <p>No regulation sets a date. The obligation is immediate and is enforced through lawsuits and demand letters, with WCAG 2.1 AA used as the practical benchmark in settlements.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Section 504</span>
+        <h3>Federal funding recipients</h3>
+        <p>HHS set WCAG 2.1 AA as the standard for recipients of federal healthcare funding, with dates split by employee count and extended by one year in May 2026.</p>
+      </article>
+    </div>
+
+    <h2>Full timeline</h2>
+    <table>
+      <caption>Dates below come from the Federal Register, ADA.gov, and EUR-Lex. Superseded dates are shown so older memos can be checked against the current rule.</caption>
+      <thead>
+        <tr><th scope="col">Date</th><th scope="col">Event</th><th scope="col">Applies to</th><th scope="col">Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2024-04-24</td><td>DOJ final rule on web and mobile app accessibility</td><td>State and local governments</td><td>In force</td></tr>
+        <tr><td>2025-06-28</td><td>European Accessibility Act applies</td><td>EU consumer products and services</td><td>In force</td></tr>
+        <tr><td>2026-04-20</td><td>DOJ extends Title II dates by one year</td><td>Title II entities</td><td>In force</td></tr>
+        <tr><td>2026-05-11</td><td>HHS extends Section 504 dates by one year</td><td>HHS funding recipients</td><td>In force</td></tr>
+        <tr><td>2027-04-26</td><td>Title II compliance, population 50,000 or more</td><td>Large public entities</td><td>Upcoming</td></tr>
+        <tr><td>2027-05-11</td><td>Section 504 compliance, 15 or more employees</td><td>HHS recipients</td><td>Upcoming</td></tr>
+        <tr><td>2028-04-26</td><td>Title II compliance, population under 50,000 and special districts</td><td>Small public entities</td><td>Upcoming</td></tr>
+        <tr><td>2028-05-10</td><td>Section 504 compliance, fewer than 15 employees</td><td>Small HHS recipients</td><td>Upcoming</td></tr>
+      </tbody>
+    </table>
+
+    <div class="cta">
+      <p><strong>Know the date. Then close the gap.</strong> Scan a whole domain against WCAG 2.1 AA and WCAG 2.2, get prioritized fixes, and keep the audit trail a procurement reviewer will accept.</p>
+      <a class="btn" href="https://veduis.com/products/vcompliance-scanner/">Open vComplianceScanner</a>
+    </div>
+
+    <h2>Go deeper</h2>
+    <ul class="links">
+      <li><a href="https://veduis.com/blog/ada-title-iii-vs-title-ii-websites/">ADA Title II vs Title III: which law applies to a website</a></li>
+      <li><a href="https://veduis.com/blog/web-accessibility-wcag-complete-guide/">WCAG 2.2 developer implementation manual</a></li>
+      <li><a href="https://veduis.com/compliance-solutions/ada-demand-letter/">Responding to an ADA demand letter</a></li>
+      <li><a href="https://veduis.com/blog/ada-website-lawsuit-trends/">Where ADA website lawsuits are being filed</a></li>
+    </ul>
+  </main>
+
+  <footer>
+    <p>Dates and standards are compiled from primary sources and mirrored in a citable dataset: <a href="https://doi.org/10.5281/zenodo.23781873" rel="noopener">10.5281/zenodo.23781873</a>. Confirm current status before relying on any date for a filing or procurement decision. Nothing here is legal advice.</p>
+    <p>Built by <a href="https://veduis.com/" rel="noopener">Veduis</a>. Scanner, benchmarks, and free tools for web accessibility compliance.</p>
+  </footer>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "ADA Web Accessibility Deadline Calculator",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "description": "Calculates the U.S. web accessibility compliance date that applies to a given entity type under DOJ ADA Title II, HHS Section 504, ADA Title III, and the European Accessibility Act.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": { "@type": "Organization", "name": "Veduis", "url": "https://veduis.com/" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "When do state and local governments have to comply with the ADA web rule?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Public entities with a population of 50,000 or more must comply by April 26, 2027. Entities with a population under 50,000 and special district governments must comply by April 26, 2028. Both dates were extended by one year by a DOJ interim final rule published in April 2026." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do private businesses have a web accessibility deadline?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. ADA Title III has no regulatory deadline or grace period. The obligation is immediate, enforced through lawsuits and demand letters, with WCAG 2.1 AA as the benchmark used in settlements." }
+        },
+        {
+          "@type": "Question",
+          "name": "What standard does the ADA web rule require?",
+          "acceptedAnswer": { "@type": "Answer", "text": "WCAG 2.1 Level AA for web content and mobile applications. WCAG 2.2 is not required by the rule but is increasingly requested in procurement and vendor reviews." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  var RULES = {
+    title_ii_large: {
+      date: '2027-04-26',
+      applies: 'State and local government entities with a population of 50,000 or more',
+      standard: 'WCAG 2.1 Level AA',
+      authority: 'U.S. Department of Justice, 28 CFR Part 35',
+      sourceUrl: 'https://www.federalregister.gov/documents/2026/04/20/2026-07663/extension-of-compliance-dates-for-nondiscrimination-on-the-basis-of-disability-accessibility-of-web',
+      sourceLabel: 'Federal Register, Extension of Compliance Dates (April 2026)',
+      note: 'Compliance covers web content and mobile apps that the entity provides directly or through contracts.'
+    },
+    title_ii_small: {
+      date: '2028-04-26',
+      applies: 'Public entities with a population under 50,000 and special district governments',
+      standard: 'WCAG 2.1 Level AA',
+      authority: 'U.S. Department of Justice, 28 CFR Part 35',
+      sourceUrl: 'https://www.federalregister.gov/documents/2026/04/20/2026-07663/extension-of-compliance-dates-for-nondiscrimination-on-the-basis-of-disability-accessibility-of-web',
+      sourceLabel: 'Federal Register, Extension of Compliance Dates (April 2026)',
+      note: 'Small entities get one additional year. The standard does not change, only the date.'
+    },
+    title_iii_business: {
+      date: null,
+      applies: 'Private businesses open to the public',
+      standard: 'WCAG 2.1 Level AA in practice, no codified standard',
+      authority: 'ADA Title III, enforced through litigation',
+      sourceUrl: 'https://www.ada.gov/resources/2024-03-08-web-rule/',
+      sourceLabel: 'ADA.gov, web and mobile app accessibility rule',
+      note: 'There is no deadline and no grace period. Demand letters are the enforcement mechanism, so exposure starts the day the site is public.'
+    },
+    federal_contractor: {
+      date: null,
+      applies: 'Federal agencies and contractors selling to them',
+      standard: 'WCAG 2.1 Level AA through the Section 508 refresh',
+      authority: 'U.S. Access Board, Revised Section 508',
+      sourceUrl: 'https://www.section508.gov/manage/laws-and-policies/',
+      sourceLabel: 'Section508.gov, laws and policies',
+      note: 'Obligations apply at procurement. A VPAT or ACR is normally the deliverable that gets checked.'
+    },
+    hhs_recipient_15: {
+      date: '2027-05-11',
+      applies: 'Recipients of HHS federal financial assistance with 15 or more employees',
+      standard: 'WCAG 2.1 Level AA',
+      authority: 'U.S. Department of Health and Human Services, Section 504',
+      sourceUrl: 'https://www.federalregister.gov/documents/2026/05/11/2026-09266/extension-of-compliance-dates-for-nondiscrimination-on-the-basis-of-disability-accessibility-of-web',
+      sourceLabel: 'Federal Register, HHS Extension of Compliance Dates (May 2026)',
+      note: 'Covers healthcare providers, health plans, and other recipients of federal funding.'
+    },
+    hhs_recipient_small: {
+      date: '2028-05-10',
+      applies: 'Recipients of HHS federal financial assistance with fewer than 15 employees',
+      standard: 'WCAG 2.1 Level AA',
+      authority: 'U.S. Department of Health and Human Services, Section 504',
+      sourceUrl: 'https://www.federalregister.gov/documents/2026/05/11/2026-09266/extension-of-compliance-dates-for-nondiscrimination-on-the-basis-of-disability-accessibility-of-web',
+      sourceLabel: 'Federal Register, HHS Extension of Compliance Dates (May 2026)',
+      note: 'Small recipients get the later date but the same standard.'
+    },
+    eu_business: {
+      date: '2025-06-28',
+      applies: 'Covered consumer products and services sold in the EU',
+      standard: 'EN 301 549, which incorporates WCAG 2.1 Level AA for web content',
+      authority: 'European Accessibility Act, Directive (EU) 2019/882',
+      sourceUrl: 'https://eur-lex.europa.eu/eli/dir/2019/882/oj',
+      sourceLabel: 'EUR-Lex, Directive (EU) 2019/882',
+      note: 'Enforcement varies by member state. Retail, e-commerce, banking, e-books, and transport are the covered sectors.'
+    }
+  };
+
+  var entity = document.getElementById('entity');
+  var asof = document.getElementById('asof');
+  var out = {
+    date: document.getElementById('deadline-date'),
+    countdown: document.getElementById('countdown'),
+    applies: document.getElementById('r-applies'),
+    standard: document.getElementById('r-standard'),
+    authority: document.getElementById('r-authority'),
+    source: document.getElementById('r-source'),
+    note: document.getElementById('r-note')
+  };
+
+  function today() {
+    var d = new Date();
+    return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  }
+
+  function parseDate(value) {
+    var parts = value.split('-').map(Number);
+    return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  }
+
+  function format(date) {
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+  }
+
+  function render() {
+    var rule = RULES[entity.value];
+    var ref = asof.value ? parseDate(asof.value) : today();
+
+    if (!rule.date) {
+      out.date.textContent = 'Already in effect';
+      out.countdown.textContent = 'no grace period';
+      out.countdown.className = 'countdown is-soon';
+    } else {
+      var target = parseDate(rule.date);
+      var days = Math.round((target - ref) / 86400000);
+      out.date.textContent = format(target);
+      if (days > 90) {
+        out.countdown.textContent = days + ' days left';
+        out.countdown.className = 'countdown is-upcoming';
+      } else if (days > 0) {
+        out.countdown.textContent = days + ' days left';
+        out.countdown.className = 'countdown is-soon';
+      } else if (days === 0) {
+        out.countdown.textContent = 'deadline is today';
+        out.countdown.className = 'countdown is-soon';
+      } else {
+        out.countdown.textContent = 'passed ' + Math.abs(days) + ' days ago';
+        out.countdown.className = 'countdown is-passed';
+      }
+    }
+
+    out.applies.textContent = rule.applies;
+    out.standard.textContent = rule.standard;
+    out.authority.textContent = rule.authority;
+    out.source.textContent = rule.sourceLabel;
+    out.source.href = rule.sourceUrl;
+    out.note.textContent = rule.note;
+  }
+
+  var d = today();
+  asof.value = d.toISOString().slice(0, 10);
+  entity.addEventListener('change', render);
+  asof.addEventListener('change', render);
+  asof.addEventListener('input', render);
+  render();
+})();
+</script>
+</body>
+</html>
